@@ -419,7 +419,7 @@
   .step-dot.done { background: var(--success); }
   .login-card-2fa { max-width: 480px; }
   .qr-container { background: #f8fafc; padding: 18px; border-radius: 10px; text-align: center; margin: 14px 0; border: 2px dashed var(--border); }
-  .qr-image { width: 220px; height: 220px; background: white; padding: 8px; border-radius: 8px; margin: 0 auto; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .qr-image { width: 280px; height: 280px; background: white; padding: 12px; border-radius: 8px; margin: 0 auto; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.08); image-rendering: pixelated; }
   .qr-secret { font-family: "Consolas", monospace; font-size: 13px; background: white; padding: 8px 12px; border-radius: 6px; margin-top: 10px; letter-spacing: 1px; color: var(--primary); display: inline-block; border: 1px solid var(--border); }
   .otp-input-group { display: flex; gap: 6px; justify-content: center; margin: 16px 0; }
   .otp-input { width: 42px; height: 50px; text-align: center; font-size: 22px; font-weight: 700; border: 2px solid var(--border); border-radius: 8px; outline: none; font-family: inherit; color: var(--primary); }
@@ -3205,10 +3205,11 @@ async function submitCredentials(e) {
 async function startTwoFASetup() {
   const secret = generateTotpSecret();
   loginState.secret = secret;
-  const otpauth = `otpauth://totp/KM%20Consult%20Recruitment%20ERP:${encodeURIComponent(loginState.user.username)}?secret=${secret}&issuer=KM%20Consult%20Recruitment%20ERP&algorithm=SHA1&digits=6&period=30`;
-  // Generate QR locally (offline, no external API)
+  // Shorter issuer = lower QR version (less dense, easier to scan)
+  const otpauth = `otpauth://totp/Recruitment-ERP:${encodeURIComponent(loginState.user.username)}?secret=${secret}&issuer=Recruitment-ERP&algorithm=SHA1&digits=6&period=30`;
+  // Generate QR locally (offline, no external API) with larger scale for easier scanning
   try {
-    document.getElementById("qrImage").src = QR.toSvgDataUrl(otpauth, 5);
+    document.getElementById("qrImage").src = QR.toSvgDataUrl(otpauth, 10);
   } catch (err) {
     console.error("QR generation failed:", err);
     document.getElementById("qrImage").alt = "QR не може да се генерира — използвайте ключа отдолу";

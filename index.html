@@ -762,18 +762,10 @@
 
       <div class="login-error" id="setupError" style="margin-top:14px;">Грешен код. Опитайте отново с актуалния код от приложението.</div>
 
-      <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-top:14px;text-align:center;">Въведете 6-цифрения код:</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-top:14px;text-align:center;">Въведете 6-цифрения код от приложението:</div>
       <div class="otp-input-group" id="otpInputSetup"></div>
 
-      <div class="demo-helper" id="setupDemoHelper">
-        <strong>🎓 Демо помощник:</strong> Тъй като това е демо, ето текущия валиден код:
-        <span class="demo-code" id="setupDemoCode">—</span>
-        <div style="margin-top:4px;font-size:10px;">Кодът се обновява на всеки 30 секунди. В реалното приложение виждате кода <strong>само в Google Authenticator</strong>.</div>
-      </div>
-
-      <div class="countdown-bar"><div class="countdown-fill" id="setupCountdown" style="width:100%;"></div></div>
-
-      <button class="login-btn" onclick="verifySetup2FA()" style="margin-top:10px;">Потвърди и продължи →</button>
+      <button class="login-btn" onclick="verifySetup2FA()" style="margin-top:14px;">Потвърди и продължи →</button>
     </div>
 
     <!-- STEP 2B: 2FA Verification (subsequent logins) -->
@@ -787,14 +779,7 @@
 
       <div class="otp-input-group" id="otpInputVerify"></div>
 
-      <div class="countdown-bar"><div class="countdown-fill" id="verifyCountdown" style="width:100%;"></div></div>
-
-      <div class="demo-helper" id="verifyDemoHelper">
-        <strong>🎓 Демо помощник:</strong> Текущ валиден код:
-        <span class="demo-code" id="verifyDemoCode">—</span>
-      </div>
-
-      <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--text);cursor:pointer;">
+      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px;color:var(--text);cursor:pointer;">
         <input type="checkbox" id="trustDevice2h" style="cursor:pointer;">
         Не изисквай 2FA на това устройство до <strong>2 часа</strong>
       </label>
@@ -3235,9 +3220,6 @@ async function startTwoFASetup() {
   document.getElementById("qrSecret").textContent = secret.match(/.{1,4}/g).join(" ");
   showLoginStep("2Setup");
   buildOtpInputs("otpInputSetup", () => verifySetup2FA());
-  await updateDemoHelper("setup");
-  // Refresh demo code every second & countdown
-  loginState.totpRefreshInterval = setInterval(() => updateDemoHelper("setup"), 1000);
 }
 
 function startTwoFAVerify() {
@@ -3246,22 +3228,6 @@ function startTwoFAVerify() {
   showLoginStep("2Verify");
   buildOtpInputs("otpInputVerify", () => verifyLogin2FA());
   setTimeout(() => { const inputs = document.querySelectorAll("#otpInputVerify .otp-input"); if (inputs[0]) inputs[0].focus(); }, 100);
-  updateDemoHelper("verify");
-  loginState.totpRefreshInterval = setInterval(() => updateDemoHelper("verify"), 1000);
-}
-
-async function updateDemoHelper(type) {
-  const remaining = getTotpRemainingSeconds();
-  const pct = (remaining / 30) * 100;
-  if (type === "setup") {
-    const code = await getTotpCode(loginState.secret);
-    document.getElementById("setupDemoCode").textContent = code;
-    document.getElementById("setupCountdown").style.width = pct + "%";
-  } else {
-    const code = await getTotpCode(loginState.user.twofa_secret);
-    document.getElementById("verifyDemoCode").textContent = code;
-    document.getElementById("verifyCountdown").style.width = pct + "%";
-  }
 }
 
 async function verifySetup2FA() {

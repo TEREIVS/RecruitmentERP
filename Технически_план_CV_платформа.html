@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<title>Технически план — Armaco Recruitment Платформа</title>
+<style>
+  @page { size: A4; margin: 2cm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.65;
+    color: #1f2937;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    background: #fafafa;
+  }
+  .cover {
+    background: linear-gradient(135deg, #0a1628 0%, #1e40af 50%, #0891b2 100%);
+    color: white;
+    padding: 50px 40px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 40px rgba(8, 145, 178, 0.25);
+    border-bottom: 3px solid #22d3ee;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-header { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
+  .cover-logo { width: 60px; height: 60px; flex-shrink: 0; filter: drop-shadow(0 4px 12px rgba(34, 211, 238, 0.5)); }
+  .cover-brand { line-height: 1.15; }
+  .cover-brand .brand-name { font-size: 24px; font-weight: 800; letter-spacing: 2px; }
+  .cover-brand .product-name { font-size: 13px; font-weight: 500; letter-spacing: 3px; color: #67e8f9; text-transform: uppercase; margin-top: 2px; }
+  .cover h1 { font-size: 30px; margin: 0 0 12px; font-weight: 700; }
+  .cover .subtitle { font-size: 17px; opacity: 0.92; margin-bottom: 30px; }
+  .cover .meta { display: flex; gap: 30px; font-size: 14px; opacity: 0.85; }
+  .cover .meta div { border-left: 2px solid rgba(34, 211, 238, 0.5); padding-left: 14px; }
+  h1, h2, h3 { color: #0a1628; }
+  h1 { font-size: 28px; margin-top: 40px; border-bottom: 3px solid #22d3ee; padding-bottom: 8px; }
+  h2 { font-size: 22px; margin-top: 32px; color: #1e40af; }
+  h3 { font-size: 17px; margin-top: 24px; color: #0891b2; }
+  p { margin: 12px 0; }
+  ul, ol { padding-left: 22px; }
+  li { margin: 6px 0; }
+  code { background: #ecfeff; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #0891b2; border: 1px solid #cffafe; }
+  .toc {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #22d3ee;
+    border-radius: 8px;
+    padding: 20px 30px;
+    margin: 30px 0;
+    box-shadow: 0 2px 8px rgba(8, 145, 178, 0.08);
+  }
+  .toc h3 { margin-top: 0; color: #0a1628; }
+  .toc ol { margin: 0; }
+  .toc a { color: #0891b2; text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; color: #1e40af; }
+  .box {
+    background: white;
+    border-left: 4px solid #22d3ee;
+    padding: 16px 22px;
+    margin: 20px 0;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(8, 145, 178, 0.08);
+  }
+  .box.warn { border-left-color: #f59e0b; background: #fffbeb; }
+  .box.ok { border-left-color: #10b981; background: #f0fdf4; }
+  .box.info { border-left-color: #06b6d4; background: #ecfeff; }
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(8, 145, 178, 0.08); }
+  th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+  th { background: linear-gradient(135deg, #0a1628 0%, #1e40af 100%); color: white; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f9fafb; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin: 2px; }
+  .tag-rec { background: #dcfce7; color: #166534; }
+  .tag-opt { background: #fef3c7; color: #92400e; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+  .phase {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border-top: 4px solid #22d3ee;
+    box-shadow: 0 2px 8px rgba(8, 145, 178, 0.08);
+    transition: transform 0.2s;
+  }
+  .phase:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(8, 145, 178, 0.15); }
+  .phase h4 { margin: 0 0 10px; color: #0a1628; }
+  .phase .duration { background: #ecfeff; color: #0891b2; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+  footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 13px; text-align: center; }
+  @media print {
+    body { background: white; padding: 0; max-width: none; }
+    .cover { box-shadow: none; }
+    .box, table, .phase { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-header">
+    <svg class="cover-logo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="coverLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#22d3ee"/>
+          <stop offset="50%" stop-color="#0ea5e9"/>
+          <stop offset="100%" stop-color="#1e40af"/>
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="54" height="54" rx="13" fill="url(#coverLogoGrad)"/>
+      <rect x="6" y="6" width="48" height="48" rx="11" fill="#0a1628" opacity="0.25"/>
+      <path d="M 30 12 L 47 48 L 39 48 L 36 41 L 24 41 L 21 48 L 13 48 Z M 26.5 35 L 33.5 35 L 30 26 Z" fill="white"/>
+      <circle cx="13" cy="13" r="2.2" fill="#22d3ee"/>
+      <circle cx="47" cy="13" r="2.2" fill="#22d3ee"/>
+      <circle cx="30" cy="54" r="2.2" fill="#22d3ee"/>
+    </svg>
+    <div class="cover-brand">
+      <div class="brand-name">ARMACO</div>
+      <div class="product-name">Recruitment</div>
+    </div>
+  </div>
+  <h1>Технически план и архитектура</h1>
+  <div class="subtitle">Уеб базирано решение за управление и интелигентно търсене в CV база — с AI разпознаване, сравнителен механизъм и GDPR съответствие</div>
+  <div class="meta">
+    <div><strong>Клиент</strong><br>Armaco</div>
+    <div><strong>Версия</strong><br>1.1 — Концептуален план</div>
+    <div><strong>Дата</strong><br>29 май 2026</div>
+  </div>
+</div>
+
+<div class="toc">
+  <h3>Съдържание</h3>
+  <ol>
+    <li><a href="#cel">Цел и обхват на проекта</a></li>
+    <li><a href="#tip">Препоръка за тип платформа</a></li>
+    <li><a href="#arch">Архитектура на системата</a></li>
+    <li><a href="#stack">Технологичен стек</a></li>
+    <li><a href="#features">Функционалности и филтри</a></li>
+    <li><a href="#parsing">Разпознаване на CV и OCR</a></li>
+    <li><a href="#ai">AI / NLP — автоматично извличане на критерии</a></li>
+    <li><a href="#gdpr">GDPR съответствие и сигурност</a></li>
+    <li><a href="#phases">Фази на разработка</a></li>
+    <li><a href="#budget">Времева и бюджетна оценка</a></li>
+    <li><a href="#next">Следващи стъпки</a></li>
+  </ol>
+</div>
+
+<h1 id="cel">1. Цел и обхват на проекта</h1>
+
+<p>Целта на проекта е разработката на интелигентна платформа за управление на база от CV-та, която:</p>
+
+<ul>
+  <li>Приема файлове в разнородни формати — <code>PDF</code>, <code>DOCX</code>, <code>DOC</code>, <code>RTF</code>, <code>ODT</code>, както и сканирани документи;</li>
+  <li>Автоматично разпознава и индексира ключови характеристики на кандидата;</li>
+  <li>Предоставя бърза и интуитивна търсачка с множество филтри;</li>
+  <li>Позволява добавяне на лични бележки към всеки профил;</li>
+  <li>Е съобразена с GDPR и спазва най-добрите практики за сигурност;</li>
+  <li>Е разработена с модерни и поддържани технологии.</li>
+</ul>
+
+<h1 id="tip">2. Препоръка за тип платформа</h1>
+
+<div class="box ok">
+  <strong>Препоръка: Уеб базирана платформа</strong><br>
+  Според Вашия избор и съгласно най-добрите практики за подобни системи, предложението е уеб-базирано решение, което може да бъде разгърнато локално (в офиса) или в облака. Достъпът се осъществява през браузър — без инсталации по отделните устройства.
+</div>
+
+<h3>Защо уеб?</h3>
+<table>
+  <thead>
+    <tr><th>Критерий</th><th>Уеб</th><th>Desktop (инсталационен)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Поддръжка на Windows и macOS</td><td>Автоматично (един код)</td><td>Две отделни версии</td></tr>
+    <tr><td>Обновления</td><td>Централизирани, мигновени</td><td>Преинсталация на всяко устройство</td></tr>
+    <tr><td>Достъп от телефон/таблет</td><td>Да</td><td>Не</td></tr>
+    <tr><td>Споделяне между колеги</td><td>Лесно</td><td>Трудно — нужна синхронизация</td></tr>
+    <tr><td>GDPR централизиран контрол</td><td>Да — единен audit log</td><td>Разпръснати копия = риск</td></tr>
+    <tr><td>Backup на базата</td><td>Едно място</td><td>На всяко устройство</td></tr>
+    <tr><td>Работа офлайн</td><td>Само ако е локално разгърната</td><td>Винаги</td></tr>
+  </tbody>
+</table>
+
+<div class="box info">
+  <strong>Хибриден подход:</strong> Препоръчвам платформата да бъде разгърната на локален мини-сървър в офиса (или работна станция) чрез Docker. Достъпвате я през браузъра като всеки уебсайт, но всичките Ви данни остават във Вашата мрежа — не напускат компанията. Възможна е и опция за облачен deployment по-късно.
+</div>
+
+<h1 id="arch">3. Архитектура на системата</h1>
+
+<p>Платформата ще има класическа трислойна архитектура с допълнителен AI слой за обработка на документи:</p>
+
+<table>
+  <thead><tr><th>Слой</th><th>Отговорност</th><th>Технология</th></tr></thead>
+  <tbody>
+    <tr><td>Презентационен (Frontend)</td><td>Потребителски интерфейс, филтри, преглед на CV-та, бележки</td><td>React 18 + TypeScript + Tailwind CSS</td></tr>
+    <tr><td>Приложен (Backend API)</td><td>Бизнес логика, удостоверяване, права за достъп</td><td>Python 3.12 + FastAPI</td></tr>
+    <tr><td>Обработка на документи</td><td>Парсване на CV, OCR, NLP извличане</td><td>Python (pdfplumber, python-docx, Tesseract, spaCy)</td></tr>
+    <tr><td>Данни</td><td>Съхранение на профили, метаданни, бележки</td><td>PostgreSQL 16 + криптирани файлове</td></tr>
+    <tr><td>Търсене</td><td>Бързо филтриране и пълнотекстово търсене</td><td>PostgreSQL FTS (или Meilisearch при &gt;10 000 CV)</td></tr>
+    <tr><td>Опаковане</td><td>Лесен deployment, изолация</td><td>Docker + Docker Compose</td></tr>
+  </tbody>
+</table>
+
+<h3>Поток на данните</h3>
+<ol>
+  <li>Потребителят качва CV (drag &amp; drop или избор на файлове / папка);</li>
+  <li>Backend разпознава типа файл и го предава на обработващия модул;</li>
+  <li>Извлича се суров текст (при сканирани — през OCR);</li>
+  <li>AI/NLP модул разпознава ключови характеристики (име, локация, сфера, езици, сертификати и т.н.);</li>
+  <li>Данните се структурират и записват в базата; оригиналният файл се съхранява криптиран;</li>
+  <li>Профилът е достъпен за търсене и редакция чрез интерфейса.</li>
+</ol>
+
+<h1 id="stack">4. Технологичен стек</h1>
+
+<p>Изборът на технологии е базиран на: <strong>модерност, поддръжка, сигурност и липса на vendor lock-in</strong>. Всички използвани технологии са с отворен код или с гъвкави лицензи.</p>
+
+<div class="grid">
+  <div class="phase">
+    <h4>Frontend</h4>
+    <ul>
+      <li><strong>React 18</strong> + <strong>TypeScript</strong> — индустриален стандарт</li>
+      <li><strong>Next.js 15</strong> — за SSR и сигурност</li>
+      <li><strong>Tailwind CSS</strong> — модерен дизайн</li>
+      <li><strong>Radix UI</strong> + <strong>shadcn/ui</strong> — достъпни компоненти</li>
+      <li><strong>TanStack Query</strong> — управление на данни</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <h4>Backend</h4>
+    <ul>
+      <li><strong>Python 3.12</strong> + <strong>FastAPI</strong></li>
+      <li><strong>SQLAlchemy 2</strong> — ORM</li>
+      <li><strong>Pydantic v2</strong> — валидация</li>
+      <li><strong>Celery</strong> + <strong>Redis</strong> — обработка във фон</li>
+      <li><strong>Argon2</strong> — за пароли</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <h4>Обработка на документи</h4>
+    <ul>
+      <li><strong>PyMuPDF</strong> / <strong>pdfplumber</strong> — PDF</li>
+      <li><strong>python-docx</strong> — DOCX</li>
+      <li><strong>striprtf</strong> — RTF</li>
+      <li><strong>LibreOffice headless</strong> — DOC, ODT</li>
+      <li><strong>Tesseract 5</strong> + <strong>PaddleOCR</strong> — OCR с поддръжка на български</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <h4>AI / NLP</h4>
+    <ul>
+      <li><strong>spaCy</strong> — Named Entity Recognition</li>
+      <li><strong>Sentence-Transformers</strong> — семантично търсене</li>
+      <li><strong>Локален LLM</strong> (Llama 3, Mistral) — за извличане на сложни критерии без данните да напускат сървъра</li>
+      <li>Опционално: OpenAI / Anthropic API за по-висока точност</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <h4>База данни и съхранение</h4>
+    <ul>
+      <li><strong>PostgreSQL 16</strong> — релационна база</li>
+      <li><strong>pgvector</strong> — за семантично търсене</li>
+      <li><strong>MinIO</strong> (S3-compatible) — за файлове</li>
+      <li><strong>Криптиране</strong> — AES-256 в покой</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <h4>Сигурност и deployment</h4>
+    <ul>
+      <li><strong>Docker</strong> + <strong>Docker Compose</strong></li>
+      <li><strong>Caddy</strong> — обратен прокси с автоматичен HTTPS</li>
+      <li><strong>OAuth2</strong> + <strong>JWT</strong> — сесии</li>
+      <li><strong>Role-Based Access Control (RBAC)</strong></li>
+      <li><strong>Sentry</strong> — мониторинг</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="features">5. Функционалности и филтри</h1>
+
+<h3>Основни функции</h3>
+<ol>
+  <li><strong>Масов импорт</strong> — drag &amp; drop на папка с десетки/стотици файлове;</li>
+  <li><strong>Автоматично разпознаване</strong> на полета от документа;</li>
+  <li><strong>Преглед на профил</strong> с оригинален файл и извлечени данни един до друг;</li>
+  <li><strong>Бележки</strong> — лични коментари към всеки кандидат (с историята им);</li>
+  <li><strong>Тагове</strong> — потребителски етикети ("обещаващ", "контакт с препоръчителя", "интервюиран");</li>
+  <li><strong>Експорт</strong> — CSV/Excel с резултатите от търсене;</li>
+  <li><strong>Дубликати</strong> — откриване на CV-та на един и същ човек.</li>
+</ol>
+
+<h3>Филтри за търсене</h3>
+<table>
+  <thead><tr><th>Филтър</th><th>Тип</th><th>Метод на разпознаване</th></tr></thead>
+  <tbody>
+    <tr><td>Локация / град</td><td>Падащо меню, multi-select</td><td>NER + речник на български градове</td></tr>
+    <tr><td>Езици</td><td>Multi-select + ниво</td><td>NER + регулярни изрази (A1–C2, native)</td></tr>
+    <tr><td>Сфера на работа</td><td>Категория (от Вашия списък)</td><td>Класификатор + ключови думи</td></tr>
+    <tr><td>Готовност за релокация</td><td>Чек-бокс (да/не/неуказано)</td><td>Ключови фрази + NLP</td></tr>
+    <tr><td>Йерархия</td><td>Категория</td><td>Класификатор на длъжността</td></tr>
+    <tr><td>Компания</td><td>Multi-select от списък</td><td>NER на работни места + нормализация</td></tr>
+    <tr><td>Сертификати</td><td>Свободен текст + предложения</td><td>Речник + NER (ISO, PMP, Six Sigma, и т.н.)</td></tr>
+    <tr><td>Компютърни умения</td><td>Multi-select + свободен текст</td><td>Речник (ERP системи, MS Office, AI инструменти, езици за програмиране)</td></tr>
+    <tr><td>Възраст / опит (години)</td><td>Слайдер</td><td>NER на дати и заетост</td></tr>
+    <tr><td>Дата на качване</td><td>Период</td><td>Системно</td></tr>
+    <tr><td>Свободен текст</td><td>Пълнотекстово</td><td>PostgreSQL FTS + семантично</td></tr>
+  </tbody>
+</table>
+
+<h1 id="parsing">6. Разпознаване на CV и OCR</h1>
+
+<h3>Поддържани формати</h3>
+<p><strong>Приоритетни формати (основен фокус на разработката):</strong> <code>PDF</code> (текстови и сканирани) и <code>DOCX</code> — според Вашата практика това са основните типове в реалната работа. За тях ще се изгради най-стабилният и точен парсер.</p>
+<p><strong>Допълнителни формати:</strong> <code>DOC</code> (стар Word, конверсия през LibreOffice headless), <code>RTF</code>, <code>ODT</code>, <code>TXT</code>, <code>HTML</code>, и изображения (<code>JPG</code>, <code>PNG</code>) през OCR.</p>
+<div class="box info">
+<strong>Защо това разграничение е важно:</strong> PDF и DOCX са с фундаментално различна структура. DOCX е XML с явна йерархия — заглавия, секции, таблици са лесно разпознаваеми. PDF е визуален формат — текстът е разпръснат като координати върху страница, и трябва да се реконструира логически ред. Това означава отделни оптимизирани пътеки за всеки формат.
+</div>
+
+<h3>Стратегия на обработка</h3>
+<ol>
+  <li><strong>Откриване на тип</strong> — по разширение и magic bytes;</li>
+  <li><strong>Извличане на текст</strong> с подходящ парсер;</li>
+  <li><strong>Проверка за качество</strong> — ако текстът е по-малко от прагов размер (сканиран PDF), активира се OCR;</li>
+  <li><strong>OCR</strong> — Tesseract 5 с обучени модели за <strong>български</strong> и <strong>английски</strong>; PaddleOCR като резерва за по-сложни оформления;</li>
+  <li><strong>Почистване</strong> — премахване на излишни символи, нормализация на whitespace;</li>
+  <li><strong>Структуриране</strong> — разделяне на секции (опит, образование, езици, умения).</li>
+</ol>
+
+<div class="box warn">
+  <strong>Качество на OCR:</strong> При сканирани документи качеството зависи силно от резолюцията на сканирането. Препоръка: <strong>минимум 300 DPI</strong>. Платформата ще предупреждава потребителя ако качеството е под минимума.
+</div>
+
+<h1 id="ai">7. AI / NLP — автоматично извличане на критерии</h1>
+
+<p>Сърцето на системата е модул за интелигентно извличане на данни от свободен текст. Подходът е <strong>хибриден</strong>:</p>
+
+<ol>
+  <li><strong>Правилово базиран слой</strong> — регулярни изрази и речници за стандартни полета (email, телефон, дати, езикови нива, сертификати);</li>
+  <li><strong>NER модел (spaCy)</strong> — разпознаване на имена, организации, локации, длъжности. Базов модел плюс fine-tuning върху Ваши примерни CV-та;</li>
+  <li><strong>Класификатор за сфера и йерархия</strong> — обучен върху Вашия списък с категории;</li>
+  <li><strong>Локален LLM</strong> (опционално) — за по-сложни случаи. Препоръка: <strong>Mistral 7B</strong> или <strong>Llama 3 8B</strong> локално чрез <code>Ollama</code> — данните никога не напускат сървъра, което е от съществено значение за GDPR.</li>
+</ol>
+
+<div class="box info">
+  <strong>Защо локален LLM, а не OpenAI/Anthropic?</strong> За CV база с лични данни е препоръчително да не се изпращат текстове към външен API. Локален LLM на скромен сървър (или дори по-силен лаптоп) се справя отлично с тази задача. По избор може да се добави и опционална интеграция с външен API.
+</div>
+
+<h1 id="gdpr">8. GDPR съответствие и сигурност</h1>
+
+<p>CV база съдържа лични данни по смисъла на Регламент (ЕС) 2016/679 (GDPR). Платформата ще включва:</p>
+
+<h3>Основни принципи</h3>
+<ul>
+  <li><strong>Законосъобразност</strong> — само хора, които са дали съгласие за съхранение на тяхното CV, се добавят в базата. Платформата записва дата и основание за обработката;</li>
+  <li><strong>Минимизация на данните</strong> — извличат се само нужните полета;</li>
+  <li><strong>Точност</strong> — възможност за обновяване и корекция;</li>
+  <li><strong>Ограничение на съхранението</strong> — настройваема политика за изтриване (напр. автоматично след 24 месеца неактивност);</li>
+  <li><strong>Цялост и поверителност</strong> — криптиране, контрол на достъпа;</li>
+  <li><strong>Отчетност</strong> — пълен audit log за всяко действие.</li>
+</ul>
+
+<h3>Технически мерки</h3>
+<table>
+  <thead><tr><th>Мярка</th><th>Реализация</th></tr></thead>
+  <tbody>
+    <tr><td>Криптиране в покой</td><td>AES-256-GCM за файлове; <code>pgcrypto</code> за чувствителни полета в базата</td></tr>
+    <tr><td>Криптиране в трафик</td><td>TLS 1.3 (HTTPS) задължително</td></tr>
+    <tr><td>Удостоверяване</td><td>OAuth2 + двуфакторно (TOTP); поддръжка на SSO</td></tr>
+    <tr><td>Управление на достъп</td><td>RBAC с роли: Admin, HR, Преглед</td></tr>
+    <tr><td>Audit log</td><td>Всяко четене/редакция/изтриване — записани с потребител, време, IP</td></tr>
+    <tr><td>Право на изтриване</td><td>Бутон "Forget" — пълно изтриване вкл. от backup-овете</td></tr>
+    <tr><td>Право на достъп / преносимост</td><td>Експорт на цялата информация за конкретно лице (JSON + оригинален файл)</td></tr>
+    <tr><td>Backup</td><td>Криптирани backup-ове, автоматични, с тестово възстановяване</td></tr>
+    <tr><td>Защита от brute-force</td><td>Rate limiting; блокировка след неуспешни опити</td></tr>
+    <tr><td>Защита срещу OWASP Top 10</td><td>Подсигурени headers, защита от SQL injection, XSS, CSRF</td></tr>
+  </tbody>
+</table>
+
+<h3>Организационни мерки</h3>
+<ul>
+  <li>Регистър на дейностите по обработка (член 30 GDPR);</li>
+  <li>Шаблон за оценка на въздействието върху защитата на данните (DPIA);</li>
+  <li>Шаблон за информирано съгласие на кандидата;</li>
+  <li>Документиран процес за реакция при инцидент (data breach).</li>
+</ul>
+
+<h1 id="phases">9. Фази на разработка</h1>
+
+<div class="grid">
+  <div class="phase">
+    <h4>Фаза 1 — MVP <span class="duration">6–8 седмици</span></h4>
+    <ul>
+      <li>Базова уеб платформа</li>
+      <li>Импорт на PDF и DOCX</li>
+      <li>Извличане на основни полета</li>
+      <li>Търсачка с основните филтри</li>
+      <li>Бележки към профили</li>
+      <li>Един потребител</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <h4>Фаза 2 — Интелигентност <span class="duration">4–6 седмици</span></h4>
+    <ul>
+      <li>OCR за сканирани CV-та</li>
+      <li>NER модел за по-точно извличане</li>
+      <li>Класификатор за сфера и йерархия</li>
+      <li>Извличане на сертификати и умения</li>
+      <li>Семантично търсене</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <h4>Фаза 3 — Multi-user и GDPR <span class="duration">3–4 седмици</span></h4>
+    <ul>
+      <li>Роли и права за достъп</li>
+      <li>Audit log</li>
+      <li>GDPR панел (изтриване, експорт)</li>
+      <li>Backup стратегия</li>
+      <li>Двуфакторно удостоверяване</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <h4>Фаза 4 — Продукция <span class="duration">2–3 седмици</span></h4>
+    <ul>
+      <li>Deployment в офиса (Docker)</li>
+      <li>Документация за потребителя</li>
+      <li>Обучение на екипа</li>
+      <li>Поддръжка и обновления</li>
+    </ul>
+  </div>
+</div>
+
+<h1 id="budget">10. Времева и бюджетна оценка</h1>
+
+<div class="box warn">
+  <strong>Забележка:</strong> Оценките са ориентировъчни и зависят от точния обхват, броя примерни CV-та и нужните интеграции. Финална оферта се изготвя след анализ на примерни файлове.
+</div>
+
+<table>
+  <thead><tr><th>Етап</th><th>Времетраене</th><th>Ориентировъчна стойност (лв)</th></tr></thead>
+  <tbody>
+    <tr><td>Фаза 1 — MVP</td><td>6–8 седмици</td><td>8 000 – 14 000</td></tr>
+    <tr><td>Фаза 2 — AI/NLP интелигентност</td><td>4–6 седмици</td><td>6 000 – 10 000</td></tr>
+    <tr><td>Фаза 3 — Multi-user + GDPR</td><td>3–4 седмици</td><td>4 000 – 7 000</td></tr>
+    <tr><td>Фаза 4 — Deployment</td><td>2–3 седмици</td><td>2 000 – 3 500</td></tr>
+    <tr><td><strong>Общо</strong></td><td><strong>15–21 седмици</strong></td><td><strong>20 000 – 34 500</strong></td></tr>
+  </tbody>
+</table>
+
+<h3>Текущи разходи</h3>
+<ul>
+  <li><strong>Локален сървър / работна станция</strong> (еднократно): 2 000 – 5 000 лв за прилично средно решение;</li>
+  <li><strong>Облачен хостинг</strong> (опционално): 80 – 250 лв/месец в зависимост от мащаба;</li>
+  <li><strong>Поддръжка и обновления</strong>: 200 – 600 лв/месец.</li>
+</ul>
+
+<h1 id="next">11. Следващи стъпки</h1>
+
+<ol>
+  <li><strong>Прикачване на примерни CV-та</strong> — за анализ на разнообразието от формати и качества; на тази база ще се настрои моделът за разпознаване;</li>
+  <li><strong>Уточняване на категориите</strong> — фина настройка на списъците (сфери, йерархия, сертификати, умения);</li>
+  <li><strong>Преглед на интерактивния макет</strong> (отделен HTML файл) — тестване на интерфейса с примерни данни;</li>
+  <li><strong>Подписване на договор и стартиране на Фаза 1</strong>;</li>
+  <li><strong>Седмични демонстрации</strong> по време на разработка — за бърза обратна връзка.</li>
+</ol>
+
+<footer>
+  Този документ е концептуален план. Архитектурата и оценките подлежат на уточнение след анализ на примерни файлове и финални изисквания.
+</footer>
+
+</body>
+</html>

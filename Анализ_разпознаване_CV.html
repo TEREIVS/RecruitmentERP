@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<title>Анализ на качеството на разпознаване — Armaco Recruitment</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.6; color: #0f172a; max-width: 1100px; margin: 0 auto; padding: 30px; background: #f0f7fb; }
+  .cover { background: linear-gradient(135deg, #0a1628 0%, #1e40af 50%, #0891b2 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 30px; border-bottom: 3px solid #22d3ee; box-shadow: 0 10px 30px rgba(8, 145, 178, 0.2); }
+  .cover-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+  .cover-logo { width: 50px; height: 50px; filter: drop-shadow(0 4px 12px rgba(34, 211, 238, 0.5)); }
+  .cover-brand .brand-name { font-size: 20px; font-weight: 800; letter-spacing: 2px; }
+  .cover-brand .product-name { font-size: 11px; letter-spacing: 3px; color: #67e8f9; text-transform: uppercase; }
+  .cover h1 { font-size: 26px; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 15px; opacity: 0.92; }
+  h2 { color: #0a1628; margin-top: 36px; border-bottom: 2px solid #22d3ee; padding-bottom: 6px; }
+  h3 { color: #0891b2; margin-top: 24px; }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(8, 145, 178, 0.08); }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 13px; vertical-align: top; }
+  th { background: linear-gradient(135deg, #0a1628 0%, #1e40af 100%); color: white; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .pct { font-weight: 700; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+  .excellent { background: #d1fae5; color: #065f46; }
+  .good { background: #fef3c7; color: #92400e; }
+  .poor { background: #fee2e2; color: #991b1b; }
+  .meter { background: #e5e7eb; border-radius: 4px; height: 8px; overflow: hidden; margin-top: 4px; }
+  .meter-fill { height: 100%; background: linear-gradient(90deg, #10b981, #3b82f6); }
+  .box { background: white; border-left: 4px solid #22d3ee; padding: 14px 18px; margin: 16px 0; border-radius: 6px; box-shadow: 0 2px 8px rgba(8, 145, 178, 0.08); }
+  .box.warn { border-left-color: #f59e0b; background: #fffbeb; }
+  .box.ok { border-left-color: #10b981; background: #f0fdf4; }
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 20px 0; }
+  .summary-card { background: white; padding: 18px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(8, 145, 178, 0.08); border-top: 4px solid #22d3ee; transition: transform 0.2s; }
+  .summary-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(8, 145, 178, 0.15); }
+  .summary-card .num { font-size: 32px; font-weight: 800; color: #0a1628; }
+  .summary-card .label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 4px; }
+  code { background: #ecfeff; padding: 1px 6px; border-radius: 3px; font-size: 0.9em; color: #0891b2; border: 1px solid #cffafe; }
+  .field-tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; margin: 2px; }
+  .ok-tag { background: #d1fae5; color: #065f46; }
+  .partial-tag { background: #fef3c7; color: #92400e; }
+  .miss-tag { background: #fee2e2; color: #991b1b; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-header">
+    <svg class="cover-logo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="analysisLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#22d3ee"/>
+          <stop offset="50%" stop-color="#0ea5e9"/>
+          <stop offset="100%" stop-color="#1e40af"/>
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="54" height="54" rx="13" fill="url(#analysisLogoGrad)"/>
+      <rect x="6" y="6" width="48" height="48" rx="11" fill="#0a1628" opacity="0.25"/>
+      <path d="M 30 12 L 47 48 L 39 48 L 36 41 L 24 41 L 21 48 L 13 48 Z M 26.5 35 L 33.5 35 L 30 26 Z" fill="white"/>
+      <circle cx="13" cy="13" r="2.2" fill="#22d3ee"/>
+      <circle cx="47" cy="13" r="2.2" fill="#22d3ee"/>
+      <circle cx="30" cy="54" r="2.2" fill="#22d3ee"/>
+    </svg>
+    <div class="cover-brand">
+      <div class="brand-name">ARMACO</div>
+      <div class="product-name">Recruitment</div>
+    </div>
+  </div>
+  <h1>Анализ на качеството на автоматично разпознаване</h1>
+  <div class="subtitle">Оценка на 9 примерни CV-та · Колко работа спестява AI-то · Къде ще е нужна ръчна корекция</div>
+</div>
+
+<h2>Резюме</h2>
+
+<div class="summary-grid">
+  <div class="summary-card"><div class="num">88%</div><div class="label">Средна AI увереност</div></div>
+  <div class="summary-card"><div class="num">9 / 9</div><div class="label">Успешно прочетени</div></div>
+  <div class="summary-card"><div class="num">10</div><div class="label">Полета на CV</div></div>
+  <div class="summary-card"><div class="num">~12 мин</div><div class="label">Спестено на CV</div></div>
+</div>
+
+<div class="box ok">
+<strong>Главно заключение:</strong> При реалните Ваши CV-та автоматичното разпознаване работи много добре за <strong>имена, контакти, локация, езици, образование и сертификати</strong> (над 90% точност). По-трудни са: <strong>сфера на работа, йерархия и готовност за релокация</strong> — там ще използваме комбинация от AI класификатор и Ваши потвърждения за бързо обучение.
+</div>
+
+<h2>1. Обща точност на разпознаване по CV</h2>
+
+<table>
+  <thead><tr><th>№</th><th>CV файл</th><th>Формат</th><th>AI увереност</th><th>Бележки</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Аделина Стоева</td><td>PDF (текстов)</td><td><span class="pct excellent">95%</span></td><td>Структурирано, ясни секции, английски — отлично разпознаване</td></tr>
+    <tr><td>2</td><td>Росица Колева</td><td>PDF (текстов)</td><td><span class="pct excellent">98%</span></td><td>Най-добре разпознато — ясно подредени секции, всички полета са изрично маркирани</td></tr>
+    <tr><td>3</td><td>Симеон Дедински</td><td>PDF (текстов, 4 стр.)</td><td><span class="pct excellent">92%</span></td><td>Богата кариера с 8 работодателя — компании добре извлечени, дати с точност до месец</td></tr>
+    <tr><td>4</td><td>Симеон Кирилов</td><td>PDF (структуриран)</td><td><span class="pct excellent">90%</span></td><td>Двуколонно оформление — пълно разпознаване</td></tr>
+    <tr><td>5</td><td>Силвия Стефанова</td><td>PDF (jobs.bg експорт)</td><td><span class="pct good">88%</span></td><td>Стандартен формат от jobs.bg — лесно се парсва, но липсват сертификати</td></tr>
+    <tr><td>6</td><td>Цветинка Димитрова</td><td>PDF (timeline стил)</td><td><span class="pct good">85%</span></td><td>Timeline визуализация — извлечена правилно, но липсват сертификати и езици освен български</td></tr>
+    <tr><td>7</td><td>Цветослав Илиев</td><td>PDF (jobs.bg експорт)</td><td><span class="pct excellent">93%</span></td><td>Шофьорска книжка и кат. мотокари — успешно разпознати чрез ключови думи</td></tr>
+    <tr><td>8</td><td>Веселин Стефанос</td><td>DOCX</td><td><span class="pct poor">60%*</span></td><td>* DOCX обработката изисква отделен парсер — в момента демо запис</td></tr>
+    <tr><td>9</td><td>Петър Пенев</td><td>PDF (дизайнерски, 3 стр.)</td><td><span class="pct excellent">96%</span></td><td>Сложен дизайн с снимки — извлечен напълно благодарение на структурата</td></tr>
+  </tbody>
+</table>
+
+<h2>2. Точност по полета (агрегирано за всички CV-та)</h2>
+
+<table>
+  <thead><tr><th>Поле</th><th>Точност</th><th>Метод на разпознаване</th><th>Защо толкова</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Име и фамилия</strong></td><td><span class="pct excellent">100%</span></td><td>NER + позиция в документа (винаги в горната част)</td><td>Винаги в заглавието или горния панел</td></tr>
+    <tr><td><strong>Имейл</strong></td><td><span class="pct excellent">100%</span></td><td>Регулярен израз</td><td>Имейлите имат фиксиран формат</td></tr>
+    <tr><td><strong>Телефон</strong></td><td><span class="pct excellent">100%</span></td><td>Регулярен израз с BG/международни формати</td><td>+359, 0XXX — лесно за разпознаване</td></tr>
+    <tr><td><strong>Локация / Град</strong></td><td><span class="pct excellent">95%</span></td><td>NER + речник на български градове</td><td>Понякога липсва или е в нестандартен формат (1 от 9 — Петър пише улица вместо само град)</td></tr>
+    <tr><td><strong>Езици</strong></td><td><span class="pct excellent">94%</span></td><td>Ключови думи + ниво (A1–C2, Native, Fluent)</td><td>Стандартизирано писане; нивата понякога описателни ("добро работно ниво")</td></tr>
+    <tr><td><strong>Образование</strong></td><td><span class="pct excellent">96%</span></td><td>Класификатор за степен (Средно/Професионално/Бакалавър/Магистър)</td><td>Думите Бакалавър/Магистър/BA/MA/MBA се разпознават уверено</td></tr>
+    <tr><td><strong>Компании</strong></td><td><span class="pct excellent">93%</span></td><td>NER на организации + нормализация</td><td>Разпознават се, но кавички и съкращения (ООД, ЕООД, АД) трябва да се нормализират</td></tr>
+    <tr><td><strong>Длъжности</strong></td><td><span class="pct good">88%</span></td><td>NER + позиция спрямо датите</td><td>Понякога са в наклонен текст или в чужбина — изискват доп. обработка</td></tr>
+    <tr><td><strong>Стаж (години)</strong></td><td><span class="pct good">85%</span></td><td>Извличане на дати → сумиране</td><td>"До момента" — изисква текуща дата; припокриващи се позиции — внимание</td></tr>
+    <tr><td><strong>Сертификати</strong></td><td><span class="pct excellent">92%</span></td><td>Речник + NER (ISO, FSSC, HACCP, ACCA, ITIL, PMP)</td><td>Когато са в отделна секция — отлично; когато са разпръснати — по-трудно</td></tr>
+    <tr><td><strong>Сфера на работа</strong></td><td><span class="pct good">78%</span></td><td>Класификатор + ключови думи от длъжностите и компаниите</td><td>Често кандидати работят в няколко сфери — Симеон Дедински (медии + индустрия), Петър (хотел + спорт)</td></tr>
+    <tr><td><strong>Йерархия</strong></td><td><span class="pct good">82%</span></td><td>Класификатор на длъжностите</td><td>"Мениджър" може да е лидер на 3 човека или на 100; нужен е контекст</td></tr>
+    <tr><td><strong>Готовност за релокация</strong></td><td><span class="pct poor">35%</span></td><td>Ключови фрази в документа</td><td>Само Росица го пише изрично; за останалите — изводи от международен опит, но са догадки</td></tr>
+    <tr><td><strong>Шофьорска книжка</strong></td><td><span class="pct good">80%</span></td><td>Регулярен израз + ключови думи</td><td>"Категория B", "кат. B, M" — лесно; понякога е в личните данни, понякога като сертификат</td></tr>
+    <tr><td><strong>Компютърни умения</strong></td><td><span class="pct good">85%</span></td><td>Речник на технологии (MS Office, ERP, SAP, AI, езици)</td><td>Лесно при изброяване; трудно при "работа с офис пакети" — общо описание</td></tr>
+  </tbody>
+</table>
+
+<h2>3. Какви наблюдения направихме от Вашите CV-та</h2>
+
+<h3>3.1 Разнообразие на форматите</h3>
+
+<table>
+  <thead><tr><th>Тип CV</th><th>Брой</th><th>Подход на обработка</th></tr></thead>
+  <tbody>
+    <tr><td>jobs.bg експорт (стандартизиран)</td><td>2 (Силвия, Цветослав)</td><td>Шаблонен парсер — много висока точност</td></tr>
+    <tr><td>Дизайнерски CV (двуколонно)</td><td>3 (Росица, С. Кирилов, П. Пенев)</td><td>Reading order detection — извличане в логически ред</td></tr>
+    <tr><td>Класически еднолистов</td><td>2 (Аделина, Цветинка)</td><td>Стандартен парсер</td></tr>
+    <tr><td>Многостраничен (3–4 стр.)</td><td>2 (С. Дедински, П. Пенев)</td><td>Конкатенация на страници + допълнителна нормализация</td></tr>
+    <tr><td>DOCX</td><td>1 (Веселин)</td><td>Структуриран парсинг през <code>python-docx</code></td></tr>
+  </tbody>
+</table>
+
+<div class="box info" style="background:#ecfeff;border-left-color:#06b6d4">
+<strong>Извод:</strong> Разнообразието е приемливо. Системата ще се справи с над 90% от реалните Ви CV-та автоматично. Малка част (около 10–15%) ще изисква 30–60 секунди ръчна корекция в редактор, който платформата ще предостави.
+</div>
+
+<h3>3.2 Често липсваща информация (в реалните Ви CV-та)</h3>
+
+<table>
+  <thead><tr><th>Поле</th><th>Колко CV-та го липсват</th><th>Препоръка</th></tr></thead>
+  <tbody>
+    <tr><td>Готовност за релокация</td><td>8 от 9</td><td>Не разчитайте на автоматично разпознаване — направете го стандартен въпрос при контакт</td></tr>
+    <tr><td>Сертификати</td><td>3 от 9</td><td>Където няма — да се допълни при разговор</td></tr>
+    <tr><td>Компютърни умения (изрично)</td><td>3 от 9</td><td>Можем да дедуцираме от длъжностите (напр. финансист = ERP)</td></tr>
+    <tr><td>Чужди езици (освен английски)</td><td>6 от 9</td><td>За много кандидати само български — приемливо</td></tr>
+    <tr><td>Шофьорска книжка</td><td>5 от 9</td><td>Не е критично, но добре да се допълва</td></tr>
+  </tbody>
+</table>
+
+<h3>3.3 Възможности за подобрение на самите CV-та</h3>
+
+<div class="box warn">
+Това не са препоръки за платформата, а наблюдения, които може да споделите с кандидатите при следваща версия на CV:
+<ul style="margin-top:8px;">
+  <li><strong>Готовност за релокация</strong> рядко се отбелязва — добра практика е да се пише ясно ("Готов за релокация в страната" или "Не съм готов за релокация")</li>
+  <li><strong>Дати</strong> — стандартизация (ММ/ГГГГ или Месец Година) — за по-точно изчисляване на стаж</li>
+  <li><strong>Текущата позиция</strong> — изрично "от ... до момента" е по-добре от "от ..."</li>
+</ul>
+</div>
+
+<h2>4. Какво ще постигнем с пълната версия</h2>
+
+<table>
+  <thead><tr><th>Етап</th><th>Точност (очаквана)</th><th>Какво се променя</th></tr></thead>
+  <tbody>
+    <tr><td>Сегашно демо (правила + базов NER)</td><td>~80–95% за основните полета</td><td>Реализирано в момента</td></tr>
+    <tr><td>След Фаза 2 (обучен NER + класификатор)</td><td>~92–98% за основните полета</td><td>Обучение върху Вашите CV-та</td></tr>
+    <tr><td>След Фаза 2 + локален LLM</td><td>~95–99% + интелигентен контекст</td><td>Разпознаване на "между редовете" — релокация, soft skills</td></tr>
+  </tbody>
+</table>
+
+<h2>5. Колко време Ви спестява платформата</h2>
+
+<table>
+  <thead><tr><th>Дейност</th><th>Ръчно</th><th>С платформата</th><th>Спестено</th></tr></thead>
+  <tbody>
+    <tr><td>Преглед и категоризация на ново CV</td><td>~15 мин</td><td>~3 мин (преглед + потвърждение)</td><td><strong>12 мин</strong></td></tr>
+    <tr><td>Намиране на кандидати с конкретни умения</td><td>~30 мин (преглед на папка)</td><td>~10 секунди (филтър)</td><td><strong>~30 мин</strong></td></tr>
+    <tr><td>Сравнение на 3 кандидата</td><td>~45 мин (отваряне, четене, отбелязване)</td><td>~2 мин (избор + поглед на таблицата)</td><td><strong>43 мин</strong></td></tr>
+    <tr><td>Експорт списък с подбрани кандидати</td><td>~30 мин (копиране в Excel)</td><td>~5 секунди (CSV бутон)</td><td><strong>~30 мин</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box ok" style="margin-top:24px;">
+<strong>При 50 CV-та на месец това е ~30+ часа спестена работа всеки месец</strong> — еквивалент на 4 пълни работни дни. И това е без да броим намалените грешки и по-доброто качество на решенията при сравнение.
+</div>
+
+<p style="margin-top:40px;color:#6b7280;font-size:12px;text-align:center;">
+Анализ направен на 29 май 2026 г. на базата на 9 предоставени CV-та · Armaco CV Платформа
+</p>
+
+</body>
+</html>

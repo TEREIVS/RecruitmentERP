@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Industry-standard QR library (loaded async, fallback to local generator if blocked) -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <title>Recruitment ERP — Интерактивна Платформа</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -176,19 +178,26 @@
   .login-screen {
     position: fixed; inset: 0; z-index: 500;
     background: linear-gradient(135deg, #0a1628 0%, #1e40af 50%, #0891b2 100%);
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
+    overflow-y: auto;
+    padding: 20px 20px 40px;
     background-image:
       radial-gradient(circle at 20% 20%, rgba(34, 211, 238, 0.3) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.25) 0%, transparent 50%),
       linear-gradient(135deg, #0a1628 0%, #1e40af 50%, #0891b2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
   }
   .login-screen.hidden { display: none; }
   .login-card {
-    background: white; border-radius: 16px; padding: 44px 40px;
-    width: 100%; max-width: 420px;
+    background: white; border-radius: 16px; padding: 36px 36px;
+    width: 100%; max-width: 440px;
     box-shadow: 0 25px 70px rgba(0,0,0,0.4), 0 0 0 1px rgba(34, 211, 238, 0.2);
     animation: loginAppear 0.4s;
+    margin: auto 0;
+    flex-shrink: 0;
   }
   @keyframes loginAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   .login-logo { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
@@ -419,7 +428,7 @@
   .step-dot.done { background: var(--success); }
   .login-card-2fa { max-width: 480px; }
   .qr-container { background: #f8fafc; padding: 18px; border-radius: 10px; text-align: center; margin: 14px 0; border: 2px dashed var(--border); }
-  .qr-image { width: 280px; height: 280px; background: white; padding: 12px; border-radius: 8px; margin: 0 auto; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.08); image-rendering: pixelated; }
+  .qr-image { width: 220px; height: 220px; background: white; padding: 10px; border-radius: 8px; margin: 0 auto; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.08); image-rendering: pixelated; }
   .qr-secret { font-family: "Consolas", monospace; font-size: 13px; background: white; padding: 8px 12px; border-radius: 6px; margin-top: 10px; letter-spacing: 1px; color: var(--primary); display: inline-block; border: 1px solid var(--border); }
   .otp-input-group { display: flex; gap: 6px; justify-content: center; margin: 16px 0; }
   .otp-input { width: 42px; height: 50px; text-align: center; font-size: 22px; font-weight: 700; border: 2px solid var(--border); border-radius: 8px; outline: none; font-family: inherit; color: var(--primary); }
@@ -3207,12 +3216,20 @@ async function startTwoFASetup() {
   loginState.secret = secret;
   // Shorter issuer = lower QR version (less dense, easier to scan)
   const otpauth = `otpauth://totp/Recruitment-ERP:${encodeURIComponent(loginState.user.username)}?secret=${secret}&issuer=Recruitment-ERP&algorithm=SHA1&digits=6&period=30`;
-  // Generate QR locally (offline, no external API) with larger scale for easier scanning
+  // Prefer industry-standard qrcode-generator library; fallback to local generator
   try {
-    document.getElementById("qrImage").src = QR.toSvgDataUrl(otpauth, 10);
+    if (typeof qrcode === "function") {
+      const qr = qrcode(0, "M");
+      qr.addData(otpauth);
+      qr.make();
+      document.getElementById("qrImage").src = qr.createDataURL(8, 4);
+    } else {
+      document.getElementById("qrImage").src = QR.toSvgDataUrl(otpauth, 10);
+    }
   } catch (err) {
     console.error("QR generation failed:", err);
-    document.getElementById("qrImage").alt = "QR не може да се генерира — използвайте ключа отдолу";
+    try { document.getElementById("qrImage").src = QR.toSvgDataUrl(otpauth, 10); }
+    catch (e2) { document.getElementById("qrImage").alt = "QR не може да се генерира — използвайте ключа отдолу"; }
   }
   // Format secret with spaces every 4 chars for readability
   document.getElementById("qrSecret").textContent = secret.match(/.{1,4}/g).join(" ");

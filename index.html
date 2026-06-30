@@ -721,19 +721,25 @@
         </div>
         <button type="submit" class="login-btn">Продължи →</button>
         <div class="login-hint">
-          <strong>Първоначален админ акаунт:</strong><br>
-          Потребител: <code>sa</code> &nbsp;·&nbsp; Парола: <code>102030</code><br>
-          <em style="color:#0e7490;">При първото влизане системата ще Ви помоли да настроите Google Authenticator (2FA).</em>
+          <strong>🔒 Сигурен достъп с 2FA</strong><br>
+          <em style="color:#0e7490;">При първото влизане системата ще Ви помоли да настроите Google Authenticator или съвместимо TOTP приложение.</em><br>
+          За първоначален достъп се свържете с администратора на системата.
         </div>
       </form>
     </div>
 
     <!-- STEP 2A: 2FA Setup (first time) -->
     <div class="login-step" id="loginStep2Setup">
-      <h3 style="color:var(--primary);margin-bottom:6px;font-size:18px;">🔐 Настройване на 2FA</h3>
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">
-        За Вашата сигурност, всеки потребител в системата трябва да активира двуфакторна автентикация. Сканирайте QR кода с приложение като <strong>Google Authenticator</strong>, <strong>Microsoft Authenticator</strong> или <strong>Authy</strong>.
+      <h3 style="color:var(--primary);margin-bottom:6px;font-size:18px;">🔐 Активиране на двуфакторна автентикация</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">
+        За Вашата сигурност всеки потребител трябва да активира 2FA с <strong style="color:#4285F4;">🔑 Google Authenticator</strong> или съвместимо приложение.
       </p>
+      <div style="background:linear-gradient(135deg,#fef3c7 0%,#fef9c3 100%);border-left:3px solid #4285F4;padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:11px;color:var(--text);">
+        <strong style="color:#1a73e8;">📲 Нямате инсталиран Google Authenticator?</strong><br>
+        <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank" rel="noopener" style="color:#1a73e8;font-weight:600;text-decoration:underline;">Android (Play Store)</a> ·
+        <a href="https://apps.apple.com/app/google-authenticator/id388497605" target="_blank" rel="noopener" style="color:#1a73e8;font-weight:600;text-decoration:underline;">iPhone (App Store)</a> ·
+        <span style="color:var(--text-muted);">или Microsoft Authenticator, Authy, 1Password</span>
+      </div>
 
       <div class="qr-container">
         <img class="qr-image" id="qrImage" alt="QR Code">

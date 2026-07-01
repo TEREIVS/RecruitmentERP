@@ -175,6 +175,69 @@
   @media (max-width: 900px) { .container { grid-template-columns: 1fr; } aside { position: relative; max-height: none; top: 0; } .header-inner { flex-wrap: wrap; } }
 
   /* ===== Login screen ===== */
+  /* Demo warning banner */
+  .demo-banner {
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);
+    color: #78350f;
+    padding: 8px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-bottom: 1px solid #b45309;
+  }
+  .demo-banner .banner-icon { font-size: 15px; animation: bannerPulse 2s ease-in-out infinite; }
+  @keyframes bannerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .demo-banner .banner-close { background: rgba(120, 53, 15, 0.15); border: none; color: #78350f; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; font-size: 12px; font-weight: 700; }
+  .demo-banner .banner-close:hover { background: rgba(120, 53, 15, 0.3); }
+  .demo-banner.hidden { display: none; }
+  .demo-banner-mini {
+    background: rgba(245, 158, 11, 0.15);
+    color: #92400e;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    letter-spacing: 0.3px;
+  }
+
+  /* Login rate-limit lockout */
+  .lockout-box {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #ef4444;
+    text-align: center;
+    margin: 10px 0;
+  }
+  .lockout-box strong { display: block; font-size: 14px; margin-bottom: 4px; }
+  .lockout-countdown { font-size: 28px; font-weight: 800; color: #ef4444; font-family: "Consolas", monospace; margin: 6px 0; }
+  .lockout-box .lockout-note { font-size: 11px; color: #7f1d1d; }
+
+  .attempts-warning {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid #f59e0b;
+    font-size: 12px;
+    margin-top: 8px;
+    display: none;
+  }
+  .attempts-warning.visible { display: block; }
+
   .login-screen {
     position: fixed; inset: 0; z-index: 500;
     background: linear-gradient(135deg, #0a1628 0%, #1e40af 50%, #0891b2 100%);
@@ -688,6 +751,13 @@
 </head>
 <body>
 
+<!-- Demo warning banner (dismissible) -->
+<div class="demo-banner" id="demoBanner">
+  <span class="banner-icon">⚠️</span>
+  <span><strong>ДЕМО ВЕРСИЯ</strong> — Не въвеждайте истински CV-та или лични данни на кандидати. Всички данни се пазят само в браузъра Ви.</span>
+  <button class="banner-close" onclick="dismissDemoBanner()" title="Скрий баннера за тази сесия">×</button>
+</div>
+
 <!-- Login screen -->
 <div class="login-screen" id="loginScreen">
   <div class="login-card login-card-2fa">
@@ -716,10 +786,48 @@
       <div class="step-dot" id="stepDot2"></div>
     </div>
 
+    <!-- STEP 0: Setup wizard (only on first-ever visit — no users exist yet) -->
+    <div class="login-step" id="loginStep0Setup">
+      <div class="demo-banner-mini">⚠️ DEMO — не въвеждайте истински данни на кандидати</div>
+      <h3 style="color:var(--primary);margin-bottom:6px;font-size:18px;">🚀 Първоначална настройка</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">
+        Добре дошли! Изглежда, че за първи път посещавате платформата. Създайте първия администраторски акаунт, за да започнете. Този акаунт има пълни права над всичко.
+      </p>
+      <form class="login-form" onsubmit="return createFirstAdmin(event)">
+        <div class="login-error" id="setupErrorMsg">Има грешка. Проверете полетата.</div>
+        <div class="login-field"><label>Имена *</label><input type="text" id="setupName" placeholder="Иван Иванов" required></div>
+        <div class="login-field"><label>Имейл *</label><input type="email" id="setupEmail" placeholder="ivan@yourcompany.bg" required></div>
+        <div class="login-field"><label>Потребителско име *</label><input type="text" id="setupUsername" placeholder="admin" pattern="[a-zA-Z0-9_.-]+" required></div>
+        <div class="login-field">
+          <label>Парола *</label>
+          <input type="password" id="setupPassword" placeholder="Минимум 8 символа" required oninput="checkSetupPasswordRules(this.value)">
+          <div class="pwd-rules" style="margin-top:6px;">
+            <div class="rules-title">🔒 Изисквания за сложност</div>
+            <div class="pwd-rule" id="s-rule-len"><span class="check-icon">✓</span>Поне 8 символа</div>
+            <div class="pwd-rule" id="s-rule-upper"><span class="check-icon">✓</span>Поне една главна буква</div>
+            <div class="pwd-rule" id="s-rule-digit"><span class="check-icon">✓</span>Поне една цифра</div>
+            <div class="pwd-rule" id="s-rule-special"><span class="check-icon">✓</span>Поне един специален знак</div>
+          </div>
+        </div>
+        <div class="login-field"><label>Потвърдете паролата *</label><input type="password" id="setupPassword2" placeholder="Въведете паролата отново" required></div>
+        <button type="submit" class="login-btn">Създай админ акаунт →</button>
+        <div class="login-hint">
+          <strong>💡 Важно:</strong> Паролата се пази локално в браузъра. При смяна на устройство или изчистване на browser data — трябва да настроите отново. При следващото Ви влизане ще преминете през активиране на 2FA.
+        </div>
+      </form>
+    </div>
+
     <!-- STEP 1: Credentials -->
-    <div class="login-step active" id="loginStep1">
+    <div class="login-step" id="loginStep1">
+      <div class="demo-banner-mini">⚠️ DEMO платформа — за реални данни се свържете с администратора</div>
       <form class="login-form" onsubmit="return submitCredentials(event)">
+        <div class="lockout-box" id="lockoutBox" style="display:none;">
+          <strong>🔒 Твърде много неуспешни опити</strong>
+          <div class="lockout-countdown" id="lockoutCountdown">5:00</div>
+          <div class="lockout-note">Login е блокиран за защита от bruteforce атаки</div>
+        </div>
         <div class="login-error" id="loginError">Грешно потребителско име или парола.</div>
+        <div class="attempts-warning" id="attemptsWarning">⚠️ <span id="attemptsRemaining">3</span> опита остават до автоматично блокиране за 5 минути.</div>
         <div class="login-field">
           <label>Потребителско име</label>
           <input type="text" id="loginUser" autocomplete="username" required autofocus>
@@ -728,11 +836,10 @@
           <label>Парола</label>
           <input type="password" id="loginPass" autocomplete="current-password" required>
         </div>
-        <button type="submit" class="login-btn">Продължи →</button>
+        <button type="submit" class="login-btn" id="loginSubmitBtn">Продължи →</button>
         <div class="login-hint">
           <strong>🔒 Сигурен достъп с 2FA</strong><br>
-          <em style="color:#0e7490;">При първото влизане системата ще Ви помоли да настроите Google Authenticator или съвместимо TOTP приложение.</em><br>
-          За първоначален достъп се свържете с администратора на системата.
+          <em style="color:#0e7490;">При първото влизане ще настроите Google Authenticator.</em>
         </div>
       </form>
     </div>
@@ -2619,11 +2726,10 @@ const ROLE_CLASSES = { sa: "sa", hr: "hr", viewer: "viewer" };
 
 // Initialize users (only on first run)
 function initUsers() {
+  // Do NOT auto-create default admin — user must complete setup wizard on first visit.
+  // This prevents hardcoded credentials from being visible in source code.
   if (!localStorage.getItem("armaco_users")) {
-    const defaultUsers = [
-      { username: "sa", password: "102030", name: "System Administrator", email: "admin@kmconsult.bg", role: "sa", active: true, lastLogin: null, created: "2026-05-29" }
-    ];
-    localStorage.setItem("armaco_users", JSON.stringify(defaultUsers));
+    localStorage.setItem("armaco_users", JSON.stringify([]));
   }
 }
 
@@ -3062,6 +3168,146 @@ const QR = (function() {
   return { encode, toSvgDataUrl };
 })();
 
+// ===== FIRST-TIME SETUP WIZARD =====
+function isFirstTimeSetup() {
+  const users = getUsers();
+  return users.length === 0;
+}
+
+function checkSetupPasswordRules(pwd) {
+  const rules = {
+    len: pwd.length >= 8,
+    upper: /[A-Z]/.test(pwd),
+    digit: /[0-9]/.test(pwd),
+    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(pwd)
+  };
+  document.getElementById("s-rule-len").classList.toggle("pass", rules.len);
+  document.getElementById("s-rule-upper").classList.toggle("pass", rules.upper);
+  document.getElementById("s-rule-digit").classList.toggle("pass", rules.digit);
+  document.getElementById("s-rule-special").classList.toggle("pass", rules.special);
+  return rules;
+}
+
+function createFirstAdmin(e) {
+  if (e) e.preventDefault();
+  const name = document.getElementById("setupName").value.trim();
+  const email = document.getElementById("setupEmail").value.trim();
+  const username = document.getElementById("setupUsername").value.trim();
+  const password = document.getElementById("setupPassword").value;
+  const password2 = document.getElementById("setupPassword2").value;
+  const errBox = document.getElementById("setupErrorMsg");
+
+  if (password !== password2) {
+    errBox.textContent = "Паролите не съвпадат.";
+    errBox.classList.add("visible");
+    return false;
+  }
+  const rules = checkSetupPasswordRules(password);
+  if (!rules.len || !rules.upper || !rules.digit || !rules.special) {
+    errBox.textContent = "Паролата не отговаря на изискванията за сложност.";
+    errBox.classList.add("visible");
+    return false;
+  }
+
+  const users = [{
+    username, password, name, email,
+    role: "sa", active: true, lastLogin: null,
+    created: new Date().toISOString().slice(0, 10)
+  }];
+  saveUsers(users);
+
+  // Verify save
+  if (getUsers().length !== 1) {
+    errBox.textContent = "Не може да се запази акаунтът. Проверете дали localStorage е активен (не сте в Incognito).";
+    errBox.classList.add("visible");
+    return false;
+  }
+
+  alert(`✅ Админ акаунтът "${name}" (@${username}) е създаден успешно.\n\nСлед малко ще Ви пренасочим към login екрана. Използвайте новите credentials, за да продължите — там ще преминете и през 2FA setup.`);
+  showLoginStep("1");
+  document.getElementById("loginUser").value = username;
+  document.getElementById("loginPass").focus();
+  return false;
+}
+
+// ===== RATE LIMITING FOR LOGIN =====
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_MINUTES = 5;
+let lockoutInterval = null;
+
+function getLoginAttempts() { return JSON.parse(localStorage.getItem("armaco_login_attempts") || '{"count":0,"lockedUntil":null}'); }
+function saveLoginAttempts(data) { localStorage.setItem("armaco_login_attempts", JSON.stringify(data)); }
+function clearLoginAttempts() {
+  localStorage.removeItem("armaco_login_attempts");
+  if (lockoutInterval) { clearInterval(lockoutInterval); lockoutInterval = null; }
+}
+
+function isLoginLocked() {
+  const d = getLoginAttempts();
+  if (!d.lockedUntil) return false;
+  if (Date.now() > d.lockedUntil) {
+    clearLoginAttempts();
+    return false;
+  }
+  return true;
+}
+
+function recordFailedAttempt() {
+  const d = getLoginAttempts();
+  d.count = (d.count || 0) + 1;
+  if (d.count >= MAX_LOGIN_ATTEMPTS) {
+    d.lockedUntil = Date.now() + LOCKOUT_MINUTES * 60 * 1000;
+    saveLoginAttempts(d);
+    updateLockoutDisplay();
+    logAudit("login", `login блокиран след ${d.count} неуспешни опита`);
+  } else {
+    saveLoginAttempts(d);
+    const remaining = MAX_LOGIN_ATTEMPTS - d.count;
+    document.getElementById("attemptsRemaining").textContent = remaining;
+    document.getElementById("attemptsWarning").classList.add("visible");
+  }
+}
+
+function updateLockoutDisplay() {
+  const d = getLoginAttempts();
+  if (!d.lockedUntil) return;
+  const box = document.getElementById("lockoutBox");
+  const countdown = document.getElementById("lockoutCountdown");
+  const btn = document.getElementById("loginSubmitBtn");
+  const showRemaining = () => {
+    const remainingMs = d.lockedUntil - Date.now();
+    if (remainingMs <= 0) {
+      clearLoginAttempts();
+      box.style.display = "none";
+      if (btn) btn.disabled = false;
+      return;
+    }
+    const min = Math.floor(remainingMs / 60000);
+    const sec = Math.floor((remainingMs % 60000) / 1000);
+    countdown.textContent = `${min}:${String(sec).padStart(2, "0")}`;
+  };
+  box.style.display = "block";
+  if (btn) btn.disabled = true;
+  document.getElementById("loginError").classList.remove("visible");
+  document.getElementById("attemptsWarning").classList.remove("visible");
+  showRemaining();
+  if (lockoutInterval) clearInterval(lockoutInterval);
+  lockoutInterval = setInterval(showRemaining, 1000);
+}
+
+// ===== DEMO BANNER =====
+function dismissDemoBanner() {
+  document.getElementById("demoBanner").classList.add("hidden");
+  sessionStorage.setItem("armaco_demo_banner_dismissed", "1");
+}
+
+function initDemoBanner() {
+  // Show unless dismissed for this session
+  if (sessionStorage.getItem("armaco_demo_banner_dismissed") === "1") {
+    document.getElementById("demoBanner").classList.add("hidden");
+  }
+}
+
 // ===== TOTP / BASE32 / 2FA =====
 const BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
@@ -3163,34 +3409,45 @@ function showLoginStep(step) {
   document.getElementById("loginStep" + step).classList.add("active");
   // Step indicator
   const dot1 = document.getElementById("stepDot1"), dot2 = document.getElementById("stepDot2");
-  if (step === "1") { dot1.className = "step-dot active"; dot2.className = "step-dot"; }
-  else { dot1.className = "step-dot done"; dot2.className = "step-dot active"; }
-  // Clear stale TOTP refresh
+  const indicator = document.querySelector(".step-indicator");
+  if (step === "0Setup") {
+    if (indicator) indicator.style.display = "none";
+  } else {
+    if (indicator) indicator.style.display = "";
+    if (step === "1") { dot1.className = "step-dot active"; dot2.className = "step-dot"; }
+    else { dot1.className = "step-dot done"; dot2.className = "step-dot active"; }
+  }
   if (loginState.totpRefreshInterval) { clearInterval(loginState.totpRefreshInterval); loginState.totpRefreshInterval = null; }
 }
 
 async function submitCredentials(e) {
   if (e) e.preventDefault();
+  // Check rate limit lockout
+  if (isLoginLocked()) {
+    updateLockoutDisplay();
+    return false;
+  }
   const username = document.getElementById("loginUser").value.trim();
   const password = document.getElementById("loginPass").value;
   const users = getUsers();
   const user = users.find(u => u.username === username && u.password === password && u.active);
   if (!user) {
     document.getElementById("loginError").classList.add("visible");
+    recordFailedAttempt();
     return false;
   }
+  // Reset attempts on successful login
+  clearLoginAttempts();
   document.getElementById("loginError").classList.remove("visible");
+  document.getElementById("attemptsWarning").classList.remove("visible");
   loginState.user = user;
   if (!user.twofa_enabled || !user.twofa_secret) {
-    // First time setup
     await startTwoFASetup();
   } else if (user.twofa_trusted_until && Date.now() < user.twofa_trusted_until) {
-    // Trusted device — skip 2FA
     const remainingMin = Math.round((user.twofa_trusted_until - Date.now()) / 60000);
     logAudit("login", `вход без 2FA (доверено устройство, остават ${remainingMin} мин)`);
     finalizeLogin(false, true);
   } else {
-    // Verify existing 2FA
     startTwoFAVerify();
   }
   return false;
@@ -5623,6 +5880,7 @@ initUsers();
 seedAuditLog();
 initFilters();
 render();
+initDemoBanner();
 // Initialize SMTP config view if admin panel is shown
 window.addEventListener("load", () => { setTimeout(loadSmtpConfig, 100); });
 
@@ -5633,13 +5891,22 @@ if (currentUser) {
   if (!currentUser.twofa_enabled) {
     clearCurrentUser();
     document.getElementById("loginScreen").classList.remove("hidden");
-    showLoginStep("1");
+    showLoginStep(isFirstTimeSetup() ? "0Setup" : "1");
   } else {
     document.getElementById("loginScreen").classList.add("hidden");
     applyUserUI(currentUser);
     startSessionMonitor();
     updateBellBadge();
     setTimeout(checkOverdueOnLogin, 600);
+  }
+} else {
+  // Not logged in — check if we need setup wizard or normal login
+  if (isFirstTimeSetup()) {
+    showLoginStep("0Setup");
+  } else {
+    showLoginStep("1");
+    // Check if still locked out from previous attempts
+    if (isLoginLocked()) updateLockoutDisplay();
   }
 }
 
